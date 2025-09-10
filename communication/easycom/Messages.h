@@ -10,7 +10,7 @@ struct MessageB {
     double field2;
 };
 
-enum MessagesIDS {
+enum EasyComID {
     MESSAGE_A = 1,
     MESSAGE_B = 2,
 };

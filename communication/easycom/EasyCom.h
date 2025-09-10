@@ -1,12 +1,13 @@
 #pragma once
 #include <memory>
 
-#include "Framer.h"
+#include "serial/Framer.h"
+#include "TransportInterface.h"
+#include "Messages.h"
+#include "Dispatcher.h"
 
 
 class EasyCom {
-
-    using TransmitFunc = void(*)(const uint8_t* data, size_t length);
 
     template <typename T>
     using ReceiveFunc = void(*)(const T& data);
@@ -14,41 +15,40 @@ class EasyCom {
 public:
 
     EasyCom() : framer_(Framer<FRAME_MAX_SIZE>(END_DELIMITER)) {
-        framer_.register_frame_handler(std::bind(&EasyCom::on_frame, this, std::placeholders::_1, std::placeholders::_2));
+        transport_interface_.set_on_message_callback(
+            std::bind(&Dispatcher::dispatch, &dispatcher_,
+                std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     }
 
     template <typename T>
-    void send(T data) {
-        // get ID from type
+    void send(EasyComID id, T data) {
+        transport_interface_.send_message(
+            static_cast<uint8_t>(id), static_cast<uint8_t *>(data), sizeof(T));
+        // Following goes in TransportInterface =====>
         // serialize data : ID + bytes + crc16
         // cobs encode
         // add delimiter
         // call send method
     }
 
-    void register_transmit_func(TransmitFunc func) {
-        transmit_func_ = func;
-    }
 
     template <typename T>
-    void subscribe(ReceiveFunc<T> func) {
-        // Find ID of type T
-        dispatcher.register_callback(id, func);
+    void subscribe(EasyComID id, ReceiveFunc<T> func) {
+        auto glue_func = [func](const T& data) {
+            func(*static_cast<const T *>(data));
+        };
+        dispatcher_.register_callback(id, glue_func);
     }
 
     void receive(uint8_t byte) {
-        framer_.add_byte(byte);
+
     }
 
 private:
-    static std::shared_ptr<EasyCom> instance_;
-    TransmitFunc transmit_func_{nullptr};
-    Framer<FRAME_MAX_SIZE> framer_;
+    Framer<FRAME_MAX_SIZE> framer_; // Move to serial
+    TransportInterface transport_interface_;
+    Dispatcher dispatcher_;
 
-    void on_frame(uint8_t* data, size_t size) {
-        // decode cobs
-        // deserialize : get ID + bytes + crc16
-        // check crc16
-    }
+
 };
 

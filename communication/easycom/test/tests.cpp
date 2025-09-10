@@ -2,7 +2,7 @@
 #include <iostream>
 #include <ostream>
 
-#include "../cobs.h"
+#include "../serial/cobs.h"
 #include "../EasyCom.h"
 
 int main() {

@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <functional>
 
-#include "Config.h"
-#include "../../storage/LinearBuffer.h"
+#include "../Config.h"
+#include "../../../storage/LinearBuffer.h"
 
 template<size_t Size>
 class Framer {
