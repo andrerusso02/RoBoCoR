@@ -12,4 +12,7 @@ add_executable(tests test/tests.cpp
         Dispatcher.h
         EasyCom.h
         Messages.h
-        TransportInterface.h)
+        TransportInterface.h
+        serial/SerialTransport.cpp
+        can/TransportCanLinux.cpp
+        can/TransportCanLinux.h)

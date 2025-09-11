@@ -24,11 +24,6 @@ public:
     void send(EasyComID id, T data) {
         transport_interface_.send_message(
             static_cast<uint8_t>(id), static_cast<uint8_t *>(data), sizeof(T));
-        // Following goes in TransportInterface =====>
-        // serialize data : ID + bytes + crc16
-        // cobs encode
-        // add delimiter
-        // call send method
     }
 
 

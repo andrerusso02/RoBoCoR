@@ -1,26 +1,24 @@
 #pragma once
-#include <array>
 #include <cstdint>
+#include <utility>
+#include <functional>
 
 using OnMessageCallback = std::function<void(uint8_t, uint8_t*, std::size_t)>;
 
 class TransportInterface {
 
     public:
-    TransportInterface();
+    virtual ~TransportInterface() = default;
 
-    void send_message(int id, uint8_t* message, std::size_t length);
+    TransportInterface() = default;
 
-    void on_receive_message(int id, uint8_t* message, std::size_t length);
+    virtual int send_message(int id, uint8_t* message, std::size_t length) = 0;
 
-    void set_on_message_callback(OnMessageCallback callback);
+    void set_on_message_callback(OnMessageCallback callback) {
+        on_message_callback_ = std::move(callback);
+    }
 
-private:
+protected:
     OnMessageCallback on_message_callback_;
-
-
-
-
-
-
 };
+
