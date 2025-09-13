@@ -18,7 +18,6 @@ TransportCanLinux::TransportCanLinux(const std::string& can_interface_name) {
                 fprintf(stderr, "Read: Incomplete CAN frame\n");
                 continue;
             }
-
             on_message_callback_(frame.can_id, frame.data, frame.len);
         }
     });
@@ -62,7 +61,7 @@ int TransportCanLinux::open_connection(const std::string& can_interface_name) {
         perror("Bind");
         return 1;
     }
-
+    return 0;
 }
 
 int TransportCanLinux::close_connection() const {

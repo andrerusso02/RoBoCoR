@@ -26,7 +26,7 @@ public:
         }
     }
 
-    void dispatch(uint8_t id, uint8_t* data, uint16_t length) {
+    void dispatch(uint8_t id, uint8_t* data, uint16_t length) const {
         for (const PairIDCallback& pair : pairs_id_callback) {
             if (pair.id == id) {
                 pair.callback(data, length);
