@@ -24,14 +24,14 @@ public:
 
 
     template <typename MsgType>
-    void send(EasyComID id, MsgType data) {
+    void send(uint8_t id, MsgType data) {
         transport_interface_->send_message(
             static_cast<uint8_t>(id), reinterpret_cast<uint8_t *>(&data), sizeof(MsgType));
     }
 
 
     template <typename MsgType>
-    void subscribe(EasyComID id, ReceiveFunc<MsgType> func) {
+    void subscribe(uint8_t id, ReceiveFunc<MsgType> func) {
         auto glue_func = [func](const uint8_t* data, size_t length) {
             if (length != sizeof(MsgType)) {
                 std::cerr << "Error: Received message length " << length

@@ -10,6 +10,8 @@
 
 #define ID_CMD_VEL 3
 
+
+
 struct CmdVel {
     double x;
     double y;
@@ -61,14 +63,23 @@ void test_transport_serial_linux() {
 void test_easycom_can_linux() {
     // cansend can0 003##0.00.00.00.00.00.00.F0.3F.00.00.00.00.00.00.00.40.00.00.00.00.00.00.08.40
     auto easycom = EasyCom::create<TransportCanLinux>("can0");
-    easycom.subscribe<CmdVel>(static_cast<EasyComID>(ID_CMD_VEL), on_cmd_vel);
-    easycom.send<CmdVel>(static_cast<EasyComID>(ID_CMD_VEL), CmdVel{1.0, 2.0, 3.0});
+    easycom.subscribe<CmdVel>(ID_CMD_VEL, on_cmd_vel);
+    easycom.send<CmdVel>(ID_CMD_VEL, CmdVel{1.0, 2.0, 3.0});
+}
+
+void test_easycom_serial_linux() {
+    auto easycom_1 = EasyCom::create<TransportSerialLinux>("/dev/pts/3", 9600);
+    easycom_1.subscribe<CmdVel>(ID_CMD_VEL, on_cmd_vel);
+
+    auto easycom_2 = EasyCom::create<TransportSerialLinux>("/dev/pts/4", 9600);
+
+    easycom_2.send<CmdVel>(ID_CMD_VEL, CmdVel{1.0, 2.0, 3.0});
 }
 
 int main() {
     // test_transport_can_linux();
     // test_easycom_can_linux();
-    test_transport_serial_linux();
-
+    // test_transport_serial_linux();
+    test_easycom_serial_linux();
     return 0;
 }
