@@ -28,10 +28,10 @@ public:
     int send_message(int id, uint8_t* message, std::size_t length) override;
 
 private:
+    std::thread receiver_thread_;
     int socket_;
     struct sockaddr_can addr_;
     struct ifreq ifr_;
-    std::thread receiver_thread_;
     int open_connection(const std::string& can_interface_name);
     int close_connection() const;
 };

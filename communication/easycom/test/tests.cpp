@@ -5,6 +5,7 @@
 // #include "../serial/cobs.h"
 #include "../EasyCom.h"
 #include "../can/TransportCanLinux.h"
+#include "../serial/TransportSerialLinux.h"
 #include "../Messages.h"
 
 #define ID_CMD_VEL 3
@@ -40,6 +41,13 @@ void test_transport_can_linux() {
     transport.send_message(4, (uint8_t *)"12345", 5);
 }
 
+void test_transport_serial_linux() {
+
+    //TransportSerialLinux transport("/tmp/myfifo", 115200);
+    // transport.set_on_message_callback(on_message);
+    // transport.send_message(4, (uint8_t *)"12345", 5);
+}
+
 void test_easycom_can_linux() {
     // cansend can0 003##0.00.00.00.00.00.00.F0.3F.00.00.00.00.00.00.00.40.00.00.00.00.00.00.08.40
     auto easycom = EasyCom::create<TransportCanLinux>("can0");
@@ -48,6 +56,18 @@ void test_easycom_can_linux() {
 }
 
 int main() {
-    test_easycom_can_linux();
+    // test_transport_can_linux();
+    // test_easycom_can_linux();
+
+    //test_transport_serial_linux();
+
+    TransportSerialLinux transport("/dev/pts/4", 9600);
+    // transport.set_on_message_callback(on_message);
+    for (int i = 0; i < 10; ++i) {
+        transport.send_message(4, (uint8_t *)"12345", 5);
+        sleep(1);
+    }
+
+
     return 0;
 }
