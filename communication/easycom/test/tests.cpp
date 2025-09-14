@@ -72,8 +72,9 @@ void test_easycom_serial_linux() {
     easycom_1.subscribe<CmdVel>(ID_CMD_VEL, on_cmd_vel);
 
     auto easycom_2 = EasyCom::create<TransportSerialLinux>("/dev/pts/4", 9600);
-
     easycom_2.send<CmdVel>(ID_CMD_VEL, CmdVel{1.0, 2.0, 3.0});
+
+    sleep(1);
 }
 
 int main() {

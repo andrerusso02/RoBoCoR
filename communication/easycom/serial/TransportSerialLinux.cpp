@@ -1,7 +1,3 @@
-//
-// Created by arusso on 9/13/25.
-//
-
 #include "../serial/TransportSerialLinux.h"
 
 
@@ -14,7 +10,6 @@
 #include <termios.h>
 #include <thread>
 #include <unistd.h>
-
 
 speed_t baud_to_constant(const int baud) {
     switch (baud) {
@@ -29,10 +24,10 @@ speed_t baud_to_constant(const int baud) {
     }
 }
 
-
 TransportSerialLinux::TransportSerialLinux(const std::string &device_path, int baudrate):
     framer_(Framer<FRAME_MAX_SIZE>(0x00)),
-    codec_(SerialCodec<FRAME_MAX_SIZE>())
+    codec_(SerialCodec<FRAME_MAX_SIZE>()),
+    receiver_stop_flag_(false)
 {
     open_connection(device_path, baudrate);
 
@@ -50,7 +45,7 @@ TransportSerialLinux::TransportSerialLinux(const std::string &device_path, int b
 
     receiver_thread_ = std::thread([this]() {
         uint8_t read_byte;
-        while (true) {
+        while (!receiver_stop_flag_.load()) {
             ssize_t nbytes = read(serial_port_, &read_byte, 1);
             if (nbytes < 0) {
                 perror("Read");
@@ -65,6 +60,10 @@ TransportSerialLinux::TransportSerialLinux(const std::string &device_path, int b
 }
 
 TransportSerialLinux::~TransportSerialLinux() {
+    receiver_stop_flag_.store(true);
+    if (receiver_thread_.joinable()) {
+        receiver_thread_.join();
+    }
     close_connection();
 }
 

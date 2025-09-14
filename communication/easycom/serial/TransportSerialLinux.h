@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <string>
 
 #include "../TransportInterface.h"
@@ -19,6 +20,7 @@ public:
 
 private:
     std::thread receiver_thread_;
+    std::atomic<bool> receiver_stop_flag_;
     int serial_port_ = -1;
     Framer<FRAME_MAX_SIZE> framer_;
     SerialCodec<FRAME_MAX_SIZE> codec_;
