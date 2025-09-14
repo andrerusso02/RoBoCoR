@@ -1,6 +1,4 @@
 #pragma once
 
-
-#define END_DELIMITER 0x02
 #define FRAME_MAX_SIZE 200
 #define DISPATCHER_MAX_CALLBACKS 20

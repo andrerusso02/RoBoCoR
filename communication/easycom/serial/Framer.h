@@ -17,12 +17,10 @@ public:
     explicit Framer(uint8_t end_delimiter) : end_delimiter_(end_delimiter) {}
 
     void add_byte(uint8_t byte) {
+        buffer_.push_back(byte);
         if (byte == end_delimiter_) {
             frame_handler_(buffer_.head_ptr() , buffer_.size());
             buffer_.clear();
-        }
-        else {
-            buffer_.push_back(byte);
         }
     }
 

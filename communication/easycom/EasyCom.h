@@ -45,13 +45,11 @@ public:
     }
 
 private:
-    Framer<FRAME_MAX_SIZE> framer_; // Move to serial
     std::unique_ptr<TransportInterface> transport_interface_;
     Dispatcher dispatcher_;
 
     explicit EasyCom(std::unique_ptr<TransportInterface> transport)
-    : framer_(Framer<FRAME_MAX_SIZE>(END_DELIMITER)),
-      transport_interface_(std::move(transport))
+    : transport_interface_(std::move(transport))
     {
         transport_interface_->set_on_message_callback(
             std::bind(&Dispatcher::dispatch, &dispatcher_,

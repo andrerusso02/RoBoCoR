@@ -16,12 +16,12 @@ struct CmdVel {
     double theta;
 };
 
-void on_cmd_vel(const CmdVel& cmd) {
+void on_cmd_vel(const CmdVel &cmd) {
     std::cout << cmd.x << ", " << cmd.y << ", " << cmd.theta << std::endl;
 }
 
 
-void on_message(int id, uint8_t* message, std::size_t length) {
+void on_message(int id, uint8_t *message, std::size_t length) {
     std::cout << "Received message with ID: " << id << " and length: " << length << std::endl;
     std::cout << "Data: ";
     for (std::size_t i = 0; i < length; ++i) {
@@ -38,14 +38,24 @@ void test_transport_can_linux() {
      */
     TransportCanLinux transport("can0");
     transport.set_on_message_callback(on_message);
-    transport.send_message(4, (uint8_t *)"12345", 5);
+    transport.send_message(4, (uint8_t *) "12345", 5);
 }
 
 void test_transport_serial_linux() {
+    /*
+    socat -d -d pty,raw,echo=0 pty,raw,echo=0
+    xxd /dev/pts/3 (to visualize)
+    */
+    TransportSerialLinux transport_tx("/dev/pts/4", 9600);
 
-    //TransportSerialLinux transport("/tmp/myfifo", 115200);
-    // transport.set_on_message_callback(on_message);
-    // transport.send_message(4, (uint8_t *)"12345", 5);
+    TransportSerialLinux transport_rx("/dev/pts/3", 9600);
+    transport_rx.set_on_message_callback(on_message);
+
+    uint8_t msg[] = {3, 2, 1, 0, 1, 2, 3};
+    for (int i = 0; i < 10; ++i) {
+        transport_tx.send_message(4, msg, 7);
+        sleep(1);
+    }
 }
 
 void test_easycom_can_linux() {
@@ -58,16 +68,7 @@ void test_easycom_can_linux() {
 int main() {
     // test_transport_can_linux();
     // test_easycom_can_linux();
-
-    //test_transport_serial_linux();
-
-    TransportSerialLinux transport("/dev/pts/4", 9600);
-    // transport.set_on_message_callback(on_message);
-    for (int i = 0; i < 10; ++i) {
-        transport.send_message(4, (uint8_t *)"12345", 5);
-        sleep(1);
-    }
-
+    test_transport_serial_linux();
 
     return 0;
 }

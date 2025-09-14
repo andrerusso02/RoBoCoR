@@ -31,16 +31,19 @@ speed_t baud_to_constant(const int baud) {
 
 
 TransportSerialLinux::TransportSerialLinux(const std::string &device_path, int baudrate):
-    framer_(Framer<FRAME_MAX_SIZE>(END_DELIMITER)),
-    codec_(SerialCodec<FRAME_MAX_SIZE>(END_DELIMITER))
+    framer_(Framer<FRAME_MAX_SIZE>(0x00)),
+    codec_(SerialCodec<FRAME_MAX_SIZE>())
 {
     open_connection(device_path, baudrate);
 
     auto frame_handler = [this](const uint8_t* data, size_t length) {
         uint8_t id;
         uint8_t buff_payload[FRAME_MAX_SIZE]; // TODO move to attribute
-        size_t payload_length = codec_.decode(data, length, id, buff_payload);
-
+        ssize_t payload_length = codec_.decode(data, length, id, buff_payload);
+        if (payload_length == -1) {
+            std::cerr << "CRC ERROR" << std::endl;
+            return;
+        }
         on_message_callback_(id, buff_payload, payload_length);
     };
     framer_.register_frame_handler(frame_handler);

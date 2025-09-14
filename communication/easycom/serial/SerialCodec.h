@@ -7,6 +7,7 @@
 #include "cobs.h"
 #include "crc16.h"
 
+#define COBS_END_DELIMITER 0x00
 
 template<size_t MaxFrameLength>
 class SerialCodec {
@@ -14,7 +15,7 @@ class SerialCodec {
      *  Encoded frame: cobs( ID | payload | CRC16) | end_delimiter
      */
 public:
-    explicit SerialCodec(uint8_t end_delimiter) : end_delimiter_(end_delimiter) {
+    explicit SerialCodec() {
     }
 
     size_t encode(uint8_t id, const uint8_t *payload, const size_t payload_length, uint8_t *buff_encoded_data) {
@@ -24,17 +25,16 @@ public:
         message_length+=2;
 
         size_t message_cobs_length = cobs::cobs_encode(buff_encode_, message_length, buff_encoded_data);
-        buff_encoded_data[message_cobs_length] = end_delimiter_;
+        buff_encoded_data[message_cobs_length] = COBS_END_DELIMITER;
         return message_cobs_length + 1;
     }
 
-    size_t decode(const uint8_t *received_frame, const size_t received_frame_length, uint8_t &id,
+    ssize_t decode(const uint8_t *received_frame, const size_t received_frame_length, uint8_t &id,
                          const uint8_t *buff_payload) {
 
         const size_t decoded_length = cobs::cobs_decode(received_frame, received_frame_length - 1, buff_decode_);
 
-        if (check_crc(buff_decode_, decoded_length, buff_decode_ + decoded_length - 2)) {
-            std::cerr << "CRC ERROR" << std::endl;
+        if (check_crc(buff_decode_, decoded_length, buff_decode_ + decoded_length - 2) == 0) {
             return -1;
         }
         id = buff_decode_[0];
@@ -67,5 +67,4 @@ private:
 
     uint8_t buff_encode_[MaxFrameLength] = {};
     uint8_t buff_decode_[MaxFrameLength] = {};
-    uint16_t end_delimiter_;
 };
