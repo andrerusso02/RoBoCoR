@@ -3,10 +3,10 @@
 #include <atomic>
 #include <string>
 
-#include "../TransportInterface.h"
-#include "Framer.h"
-#include "SerialCodec.h"
-#include "../Config.h"
+#include "../../TransportInterface.h"
+#include "../Framer.h"
+#include "../SerialCodec.h"
+#include "../../Config.h"
 
 #include <thread>
 

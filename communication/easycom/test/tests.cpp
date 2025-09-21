@@ -4,8 +4,8 @@
 
 // #include "../serial/cobs.h"
 #include "../EasyCom.h"
-#include "../can/TransportCanLinux.h"
-#include "../serial/TransportSerialLinux.h"
+#include "../can/linux/TransportCanLinux.h"
+#include "../serial/linux/TransportSerialLinux.h"
 #include "../Messages.h"
 
 #define ID_CMD_VEL 3

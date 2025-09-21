@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include "../TransportInterface.h"
+#include "../../TransportInterface.h"
 
 
 class TransportCanLinux : public TransportInterface {
